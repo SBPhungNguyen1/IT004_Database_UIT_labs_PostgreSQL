@@ -495,6 +495,59 @@ WHERE EXTRACT(MONTH FROM h.nghd) = 10
 GROUP BY c.masp
 
 -- CAU 37
+SELECT EXTRACT(MONTH FROM h.nghd), SUM(h.trigia)
+FROM hoa_don h
+WHERE EXTRACT(YEAR FROM h.nghd) = 2006
+GROUP BY EXTRACT(MONTH FROM h.nghd)
+
+-- CAU 38
+SELECT h.sohd, COUNT(c.masp) AS sl_sp
+FROM hoa_don h
+	INNER JOIN cthd c ON c.sohd = h.sohd
+GROUP BY h.sohd
+HAVING COUNT(DISTINCT c.masp) >= 4
+
+-- CAU 39
+SELECT h.sohd
+FROM hoa_don h
+	INNER JOIN cthd c ON c.sohd = h.sohd
+	INNER JOIN san_pham s ON s.masp = c.masp
+WHERE s.nuocsx = 'Viet Nam'
+GROUP BY h.sohd
+HAVING COUNT(DISTINCT s.masp) = 3
+
+-- CAU 40
+SELECT k.makh, k.hoten, COUNT(sohd) AS luotmua
+FROM khach_hang k
+	INNER JOIN hoa_don h ON h.makh = k.makh
+GROUP BY k.makh, k.hoten
+HAVING COUNT(sohd) IN (
+	SELECT COUNT(h1.sohd)
+	FROM hoa_don h1
+	GROUP BY h1.makh
+	ORDER BY COUNT(h1.sohd) DESC
+	LIMIT 1
+)
+
+-- CAU 41
+SELECT EXTRACT(MONTH FROM h.nghd) as thang, SUM(h.trigia)
+FROM hoa_don h
+WHERE EXTRACT(YEAR FROM h.nghd) = 2006
+GROUP BY EXTRACT(MONTH FROM h.nghd)
+HAVING SUM(h.trigia) IN (
+	SELECT SUM(trigia)
+	FROM hoa_don
+	WHERE EXTRACT(YEAR FROM nghd) = 2006
+	GROUP BY EXTRACT(MONTH FROM nghd)
+	ORDER BY SUM(trigia) DESC
+	LIMIT 1
+)
+
+-- CAU 42
+
+
+
+
 
 
 
