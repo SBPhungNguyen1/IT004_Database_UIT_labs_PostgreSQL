@@ -288,6 +288,214 @@ WHERE (c.masp = 'BB01' OR c.masp = 'BB02')
 	AND c.sl >=10 AND c.sl <=20
 
 -- CAU 13
+SELECT sohd 
+FROM cthd 
+WHERE masp = 'BB01' AND sl BETWEEN 10 AND 20
+
+INTERSECT
+
+SELECT sohd 
+FROM cthd 
+WHERE masp = 'BB02' AND sl BETWEEN 10 AND 20;
+
+-- CAU 14
+SELECT s.masp, s.tensp
+FROM san_pham s
+WHERE nuocsx = 'Trung Quoc'
+
+UNION
+
+SELECT s.masp, s.tensp
+FROM san_pham s
+	INNER JOIN cthd c ON c.masp = s.masp
+	INNER JOIN hoa_don h ON h.sohd = c.sohd
+WHERE nghd = '2007-01-01'
+
+-- CAU 15
+SELECT masp, tensp FROM san_pham
+
+EXCEPT
+
+SELECT s.masp, s.tensp
+FROM san_pham s
+	INNER JOIN cthd c ON c.masp = s.masp
+
+-- CAU 16
+SELECT masp, tensp FROM san_pham
+
+EXCEPT
+
+SELECT s.masp, s.tensp
+FROM san_pham s
+	INNER JOIN cthd c ON c.masp = s.masp
+	INNER JOIN hoa_don h ON c.sohd = h.sohd
+WHERE EXTRACT(YEAR FROM h.nghd) = 2006
+
+-- CAU 17
+SELECT masp, tensp FROM san_pham
+WHERE nuocsx = 'Trung Quoc'
+
+EXCEPT
+
+SELECT s.masp, s.tensp
+FROM san_pham s
+	INNER JOIN cthd c ON c.masp = s.masp
+	INNER JOIN hoa_don h ON c.sohd = h.sohd
+WHERE EXTRACT(YEAR FROM h.nghd) = 2006
+
+-- CAU 18. Tìm số hóa đơn đã mua tất cả các sản phẩm do Singapore sản xuất.
+--> Tìm số hoá đơn KHÔNG CÓ sản phẩm của Singapore nào mà hoá đơn đó KHÔNG MUA
+SELECT h.sohd
+FROM hoa_don h
+WHERE NOT EXISTS (
+	SELECT *
+	FROM san_pham s
+	WHERE s.nuocsx = 'Singapore'
+		AND NOT EXISTS (
+			SELECT *
+			FROM cthd c
+			WHERE c.sohd = h.sohd
+				AND c.masp = s.masp
+		)
+)
+
+-- CAU 19
+SELECT h.sohd
+FROM hoa_don h
+WHERE EXTRACT(YEAR FROM h.nghd) = 2006 
+	AND NOT EXISTS (
+		SELECT *
+		FROM san_pham s
+		WHERE s.nuocsx = 'Singapore'
+			AND NOT EXISTS (
+				SELECT *
+				FROM cthd c
+				WHERE c.sohd = h.sohd
+					AND c.masp = s.masp
+			)
+)
+
+-- CAU 20
+SELECT COUNT(*) as sl_hd
+FROM hoa_don h
+WHERE makh IS NULL
+
+-- CAU 21
+SELECT COUNT (DISTINCT c.masp) AS sl_sp
+FROM hoa_don h
+	INNER JOIN cthd c ON c.sohd = h.sohd
+WHERE EXTRACT(YEAR FROM h.nghd) = 2006
+
+-- CAU 22
+SELECT MAX(h.trigia) as max_tg, MIN(h.trigia) as min_tg
+FROM hoa_don h
+
+-- CAU 23
+SELECT AVG(h.trigia) as avg_trigia
+FROM hoa_don h
+WHERE EXTRACT(YEAR FROM h.nghd) = 2006
+
+-- CAU 24
+SELECT SUM(h.trigia) as sum_trigia
+FROM hoa_don h
+WHERE EXTRACT(YEAR FROM h.nghd) = 2006
+
+-- CAU 25
+SELECT *
+FROM hoa_don h
+WHERE EXTRACT(YEAR FROM h.nghd) = 2006
+ORDER BY trigia DESC
+LIMIT 1
+
+-- CAU 26
+SELECT hoten
+FROM khach_hang k
+	INNER JOIN hoa_don h ON h.makh = k.makh
+WHERE EXTRACT(YEAR FROM h.nghd) = 2006
+ORDER BY trigia DESC
+LIMIT 1
+
+-- CAU 27
+SELECT k.makh, hoten
+FROM khach_hang k
+	INNER JOIN hoa_don h ON k.makh = h.makh
+ORDER BY h.trigia DESC
+LIMIT 3
+
+-- CAU 28
+SELECT masp, tensp
+FROM san_pham s
+WHERE gia IN (
+	SELECT DISTINCT gia
+	FROM san_pham
+	ORDER BY gia DESC
+	LIMIT 3
+)
+
+-- CAU 29
+SELECT s.masp, s.tensp
+FROM san_pham s
+WHERE s.nuocsx = 'Thai Lan'
+	AND s.gia IN (
+		SELECT DISTINCT s2.gia
+		FROM san_pham s2
+		ORDER BY s2.gia DESC
+		LIMIT 3
+	)
+
+-- CAU 30
+SELECT s.masp, s.tensp
+FROM san_pham s
+WHERE s.nuocsx = 'Trung Quoc'
+	AND s.gia IN (
+		SELECT DISTINCT s2.gia
+		FROM san_pham s2
+		WHERE s2.nuocsx = 'Trung Quoc'
+		ORDER BY s2.gia DESC
+		LIMIT 3
+	)
+
+-- CAU 31
+SELECT *
+FROM khach_hang k
+WHERE k.doanhso IN (
+	SELECT DISTINCT doanhso 
+	FROM khach_hang k1
+	ORDER BY doanhso DESC
+	LIMIT 3
+)
+ORDER BY k.doanhso DESC
+
+-- CAU 32
+SELECT COUNT(*) AS tong_sp
+FROM san_pham
+WHERE nuocsx = 'Trung Quoc'
+
+-- CAU 33
+SELECT nuocsx, COUNT(*) AS tong_sp
+FROM san_pham
+GROUP BY nuocsx
+
+-- CAU 34
+SELECT nuocsx, MAX(gia) AS max_gia, MIN(gia) AS min_gia
+FROM san_pham
+GROUP BY nuocsx
+
+-- CAU 35
+SELECT nghd, SUM(trigia) AS doanhthu
+FROM hoa_don h
+GROUP BY nghd
+
+-- CAU 36
+SELECT c.masp, SUM(c.sl)
+FROM hoa_don h
+	INNER JOIN cthd c ON c.sohd = h.sohd
+WHERE EXTRACT(MONTH FROM h.nghd) = 10
+	AND EXTRACT (YEAR FROM h.nghd) = 2006
+GROUP BY c.masp
+
+-- CAU 37
+
 
 
 
