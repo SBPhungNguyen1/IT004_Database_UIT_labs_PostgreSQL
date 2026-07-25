@@ -534,7 +534,7 @@ SELECT EXTRACT(MONTH FROM h.nghd) as thang, SUM(h.trigia)
 FROM hoa_don h
 WHERE EXTRACT(YEAR FROM h.nghd) = 2006
 GROUP BY EXTRACT(MONTH FROM h.nghd)
-HAVING SUM(h.trigia) IN (
+HAVING SUM(h.trigia) = (
 	SELECT SUM(trigia)
 	FROM hoa_don
 	WHERE EXTRACT(YEAR FROM nghd) = 2006
@@ -544,8 +544,52 @@ HAVING SUM(h.trigia) IN (
 )
 
 -- CAU 42
+SELECT s.masp, s.tensp
+FROM san_pham s
+	INNER JOIN cthd c ON c.masp = s.masp
+	INNER JOIN hoa_don h ON h.sohd = c.sohd
+WHERE EXTRACT(YEAR FROM h.nghd) = 2006
+GROUP BY s.masp, s.tensp
+HAVING SUM(c.sl) = (
+	SELECT SUM(sl)
+	FROM san_pham s
+		INNER JOIN cthd c ON c.masp = s.masp
+		INNER JOIN hoa_don h ON h.sohd = c.sohd
+	WHERE EXTRACT(YEAR FROM h.nghd) = 2006
+	GROUP BY s.masp
+	ORDER BY SUM(sl) ASC
+	LIMIT 1
+)
 
+-- CAU 43
+SELECT masp, tensp, nuocsx, gia
+FROM san_pham sp1
+WHERE gia = (
+    SELECT MAX(sp2.gia)
+    FROM san_pham sp2
+    WHERE sp2.nuocsx = sp1.nuocsx
+);
 
+-- CAU 44
+SELECT nuocsx
+FROM san_pham
+GROUP BY nuocsx
+HAVING COUNT(DISTINCT gia) >= 3;
+
+-- CAU 45
+WITH Top10DoanhSo AS (
+    SELECT makh, hoten, doanhso
+    FROM khach_hang
+    WHERE makh IS NOT NULL
+    ORDER BY doanhso DESC
+    LIMIT 10
+)
+SELECT t.makh, t.hoten, t.doanhso, COUNT(h.sohd) AS so_lan_mua
+FROM Top10DoanhSo t
+LEFT JOIN hoa_don h ON t.makh = h.makh
+GROUP BY t.makh, t.hoten, t.doanhso
+ORDER BY so_lan_mua DESC
+LIMIT 1;
 
 
 
