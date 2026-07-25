@@ -78,7 +78,7 @@ IT004_Database_UIT_labs_PostgreSQL/
 1. Clone this repository.
 
 ```bash
-git clone https://github.com/<your-username>/IT004_Database_UIT_labs_PostgreSQL.git
+git clone https://github.com/SBPhungNguyen1/IT004_Database_UIT_labs_PostgreSQL.git
 ```
 
 2. Open **pgAdmin 4** and connect to your PostgreSQL server.
@@ -199,7 +199,7 @@ IT004_Database_UIT_labs_PostgreSQL/
 ### 1. Clone repository
 
 ```bash
-git clone https://github.com/<your-username>/IT004_Database_UIT_labs_PostgreSQL.git
+git clone https://github.com/SBPhungNguyen1/IT004_Database_UIT_labs_PostgreSQL.git
 ```
 
 ### 2. Mở pgAdmin 4 và kết nối PostgreSQL
