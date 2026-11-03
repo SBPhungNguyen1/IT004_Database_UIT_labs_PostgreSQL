@@ -135,6 +135,9 @@ CREATE TABLE KETQUATHI (
         CHECK (DIEM BETWEEN 0 AND 10)
 );
 
+
+--- INSERT DATA
+
 ALTER TABLE KHOA
 DROP CONSTRAINT fk_khoa_giaovien;
 
@@ -449,3 +452,42 @@ VALUES
     ('K1305', 'CTDLGT', 1, '2006-07-25', 10.00, 'Dat'),
     ('K1305', 'THDC', 1, '2006-05-20', 8.00, 'Dat'),
     ('K1305', 'CTRR', 1, '2006-05-13', 10.00, 'Dat');
+
+
+--- I. Data Definition Language
+
+
+
+--- II. Data Manipulation Language
+
+
+--- III. QUERY
+
+-- 1.	In ra danh sách (mã học viên, họ tên, ngày sinh, mã lớp) lớp trưởng của các lớp.
+SELECT MAHV, HO || ' ' || TEN AS HOTEN, NGSINH, MALOP
+FROM HOCVIEN
+
+-- 2.   In ra bảng điểm khi thi (mã học viên, họ tên , lần thi, điểm số) môn CTRR của lớp “K12”, sắp xếp theo tên, họ học viên.
+SELECT k.MAHV, h.HO || ' ' || h.TEN AS HOTEN, h.NGSINH, k.DIEM
+FROM KETQUATHI k
+	INNER JOIN HOCVIEN h ON k.MAHV = h.MAHV
+WHERE k.MAMH = 'CTRR' AND h.MALOP = 'K12'
+ORDER BY h.TEN ASC, h.HO ASC
+
+
+-- 3.	In ra danh sách những học viên (mã học viên, họ tên) và những môn học mà học viên đó thi lần thứ nhất đã đạt.
+SELECT H.MAHV, h.HO || ' ' || h.TEN AS HOTEN, MAMH
+FROM HOCVIEN h
+	INNER JOIN KETQUATHI k ON h.MAHV = K.MAHV
+WHERE LANTHI = 1 AND KQUA = 'Dat'
+
+
+
+
+
+
+
+
+
+
+
