@@ -482,12 +482,44 @@ FROM HOCVIEN h
 WHERE LANTHI = 1 AND KQUA = 'Dat'
 
 
+-- 4.	In ra danh sách học viên (mã học viên, họ tên) của lớp “K11” thi môn CTRR không đạt (ở lần thi 1).
+SELECT h.MAHV, h.HO || ' ' || h.TEN AS HOTEN
+FROM HOCVIEN h
+	INNER JOIN KETQUATHI k ON h.MAHV = k.MAHV
+WHERE h.MALOP = 'K11' AND k.MAMH = 'CTRR' AND k.KQUA = 'Khong Dat' AND k.LANTHI = 1
+
+
+-- 5.	* Danh sách học viên (mã học viên, họ tên) của lớp “K” thi môn CTRR không đạt (ở tất cả các lần thi).
+SELECT DISTINCT(h.MAHV), h.HO || ' ' || h.TEN AS HOTEN
+FROM HOCVIEN h
+	INNER JOIN KETQUATHI k ON h.MAHV = k.MAHV
+WHERE h.MALOP ILIKE 'K%' AND k.MAMH = 'CTRR' AND h.MAHV NOT IN (
+	SELECT k1.MAHV
+	FROM KETQUATHI k1
+	WHERE k1.KQUA = 'Dat' AND k1.MAMH = 'CTRR'
+) 
+
+
+-- 6.	Tìm tên những môn học mà giáo viên có tên “Tran Tam Thanh” dạy trong học kỳ 1 năm 2006.
+SELECT DISTINCT(m.MAMH), m.TENMH
+FROM GIAOVIEN g
+	INNER JOIN GIANGDAY gd ON g.MAGV = gd.MAGV
+	INNER JOIN MONHOC m ON m.MAMH = gd.MAMH
+WHERE g.HOTEN = 'Tran Tam Thanh' AND gd.HOCKY = 1 AND gd.NAM = 2006
+
+
+-- 7.	Tìm những môn học (mã môn học, tên môn học) mà giáo viên chủ nhiệm lớp “K11” dạy trong học kỳ 1 năm 2006.
+
+
+
+-- 8.	Tìm họ tên lớp trưởng của các lớp mà giáo viên có tên “Nguyen To Lan” dạy môn “Co So Du Lieu”.
 
 
 
 
+-- 9.	In ra danh sách những môn học (mã môn học, tên môn học) phải học liền trước môn “Co So Du Lieu”.
 
 
-
+-- 10.	Môn “Cau Truc Roi Rac” là môn bắt buộc phải học liền trước những môn học (mã môn học, tên môn học) nào.
 
 
