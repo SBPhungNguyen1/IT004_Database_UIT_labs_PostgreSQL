@@ -509,17 +509,44 @@ WHERE g.HOTEN = 'Tran Tam Thanh' AND gd.HOCKY = 1 AND gd.NAM = 2006
 
 
 -- 7.	Tìm những môn học (mã môn học, tên môn học) mà giáo viên chủ nhiệm lớp “K11” dạy trong học kỳ 1 năm 2006.
+SELECT DISTINCT (m.MAMH), m.TENMH
+FROM MONHOC m
+	INNER JOIN GIANGDAY gd ON m.MAMH = gd.MAMH
+WHERE gd.HOCKY = 1 AND gd.NAM = 2006 AND gd.MAGV IN (
+	SELECT l.MAGVCN
+	FROM LOP l
+	WHERE l.MALOP = 'K11'
+)
 
 
+-- 8.	Tìm họ tên lớp trưởng của các lớp mà giáo viên có tên “Nguyen To Lan” dạy môn “Co so du lieu”.
+SELECT DISTINCT (h.MAHV), h.HO || ' ' || h.TEN AS HOTEN
+FROM HOCVIEN h
+	INNER JOIN LOP l ON l.TRGLOP = h.MAHV
+	INNER JOIN GIANGDAY gd ON gd.MALOP = l.MALOP
+	INNER JOIN GIAOVIEN gv ON gv.MAGV = gd.MAGV
+	INNER JOIN MONHOC m ON m.MAMH = gd.MAMH
+WHERE gv.HOTEN = 'Nguyen To Lan' AND m.TENMH = 'Co so du lieu'
 
--- 8.	Tìm họ tên lớp trưởng của các lớp mà giáo viên có tên “Nguyen To Lan” dạy môn “Co So Du Lieu”.
 
-
-
-
--- 9.	In ra danh sách những môn học (mã môn học, tên môn học) phải học liền trước môn “Co So Du Lieu”.
+-- 9.	In ra danh sách những môn học (mã môn học, tên môn học) phải học liền trước môn “Co so du lieu”.
+SELECT DISTINCT(m.MAMH), m.TENMH
+FROM MONHOC m
+WHERE m.MAMH IN (
+	SELECT d.MAMH
+	FROM DIEUKIEN d
+		INNER JOIN MONHOC m1 ON m1.MAMH = d.MAMH_TRUOC
+	WHERE m1.TENMH = 'Co so du lieu'
+)
 
 
 -- 10.	Môn “Cau Truc Roi Rac” là môn bắt buộc phải học liền trước những môn học (mã môn học, tên môn học) nào.
+
+
+
+
+
+
+
 
 
