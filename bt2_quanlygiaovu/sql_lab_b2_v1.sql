@@ -533,14 +533,42 @@ WHERE gv.HOTEN = 'Nguyen To Lan' AND m.TENMH = 'Co so du lieu'
 SELECT DISTINCT(m.MAMH), m.TENMH
 FROM MONHOC m
 WHERE m.MAMH IN (
-	SELECT d.MAMH
+	SELECT d.MAMH_TRUOC
 	FROM DIEUKIEN d
-		INNER JOIN MONHOC m1 ON m1.MAMH = d.MAMH_TRUOC
+		INNER JOIN MONHOC m1 ON m1.MAMH = d.MAMH
 	WHERE m1.TENMH = 'Co so du lieu'
 )
 
 
 -- 10.	Môn “Cau Truc Roi Rac” là môn bắt buộc phải học liền trước những môn học (mã môn học, tên môn học) nào.
+SELECT m.MAMH, m.TENMH
+FROM MONHOC m
+WHERE m.MAMH IN (
+	SELECT d.MAMH
+	FROM DIEUKIEN d
+		INNER JOIN MONHOC m1 ON m1.MAMH = d.MAMH_TRUOC
+	WHERE m1.TENMH = 'Cau truc roi rac'
+)
+
+
+-- 11.	Học viên ít nhất là 18 tuổi.
+ALTER TABLE HOCVIEN
+ADD CONSTRAINT CK_HOCVIEN_TUOI
+CHECK (
+	AGE(CURRENT_DATE, NGSINH) >= INTERVAL '18 years'
+)
+
+
+-- 12.	Giảng dạy một môn học ngày bắt đầu (TUNGAY) phải nhỏ hơn ngày kết thúc (DENNGAY).
+
+
+
+
+
+-- 13.	Giáo viên khi vào làm ít nhất là 22 tuổi.
+
+
+
 
 
 
