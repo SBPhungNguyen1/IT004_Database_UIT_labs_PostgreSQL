@@ -551,23 +551,43 @@ WHERE m.MAMH IN (
 )
 
 
--- 11.	Học viên ít nhất là 18 tuổi.
-ALTER TABLE HOCVIEN
-ADD CONSTRAINT CK_HOCVIEN_TUOI
-CHECK (
-	AGE(CURRENT_DATE, NGSINH) >= INTERVAL '18 years'
+-- 11.	Tìm họ tên giáo viên dạy môn CTRR cho cả hai lớp “K11” và “K12” trong cùng học kỳ 1 năm 2006.
+SELECT gv.MAGV, gv.HOTEN
+FROM GIAOVIEN gv
+WHERE gv.MAGV IN (
+	SELECT MAGV
+	FROM GIANGDAY
+	WHERE MAMH = 'CTRR' AND MALOP = 'K11' AND HOCKY = 1 AND NAM = 2006
+)
+INTERSECT
+SELECT gv.MAGV, gv.HOTEN
+FROM GIAOVIEN gv
+WHERE gv.MAGV IN (
+	SELECT MAGV
+	FROM GIANGDAY
+	WHERE MAMH = 'CTRR' AND MALOP = 'K12' AND HOCKY = 1 AND NAM = 2006
 )
 
 
--- 12.	Giảng dạy một môn học ngày bắt đầu (TUNGAY) phải nhỏ hơn ngày kết thúc (DENNGAY).
+-- 12.	Tìm những học viên (mã học viên, họ tên) thi không đạt môn CSDL ở lần thi thứ 1 nhưng chưa thi lại môn này.
+SELECT *
+FROM HOCVIEN h
+	INNER JOIN KETQUATHI k ON k.MAHV = h.MAHV
+WHERE k.LANTHI = 1 AND k.KQUA = 'Khong Dat' AND k.MAMH = 'CSDL' AND k.LANTHI = (
+	SELECT MAX(LANTHI)
+	FROM KETQUATHI k1 
+	WHERE k1.MAHV = k.MAHV AND k1.MAMH = K.MAMH
+)
+
+
+-- 13.	Tìm giáo viên (mã giáo viên, họ tên) không được phân công giảng dạy bất kỳ môn học nào.
 
 
 
+-- 14.	Tìm giáo viên (mã giáo viên, họ tên) không được phân công giảng dạy bất kỳ môn học nào thuộc khoa giáo viên đó phụ trách.
 
 
--- 13.	Giáo viên khi vào làm ít nhất là 22 tuổi.
-
-
+-- 15.	Tìm họ tên các học viên thuộc lớp “K11” thi một môn bất kỳ quá 3 lần vẫn “Khong dat” hoặc thi lần thứ 2 môn CTRR được 5 điểm.
 
 
 
