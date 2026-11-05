@@ -570,7 +570,7 @@ WHERE gv.MAGV IN (
 
 
 -- 12.	Tìm những học viên (mã học viên, họ tên) thi không đạt môn CSDL ở lần thi thứ 1 nhưng chưa thi lại môn này.
-SELECT *
+SELECT h.MAHV, h.HO || ' ' || h.TEN AS HOTEN
 FROM HOCVIEN h
 	INNER JOIN KETQUATHI k ON k.MAHV = h.MAHV
 WHERE k.LANTHI = 1 AND k.KQUA = 'Khong Dat' AND k.MAMH = 'CSDL' AND k.LANTHI = (
