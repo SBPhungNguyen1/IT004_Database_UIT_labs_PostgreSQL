@@ -613,8 +613,80 @@ FROM HOCVIEN h
 WHERE h.MALOP = 'K11' AND LANTHI = 2 AND MAMH = 'CTRR' AND DIEM = 5
 
 
--- 
+-- 16.	Tìm họ tên giáo viên dạy môn CTRR cho ít nhất hai lớp trong cùng một học kỳ của một năm học.
+SELECT g.MAGV, g.HOTEN
+FROM GIAOVIEN g
+	INNER JOIN GIANGDAY gd ON gd.MAGV = g.MAGV
+WHERE gd.MAMH = 'CTRR'
+GROUP BY g.MAGV, gd.HOCKY, gd.NAM
+HAVING COUNT(*) >= 2
 
+
+-- 17.	Danh sách học viên và điểm thi môn CSDL (chỉ lấy điểm của lần thi sau cùng).
+SELECT h.MAHV, k.DIEM, k.LANTHI
+FROM HOCVIEN h
+	INNER JOIN KETQUATHI k ON k.MAHV = h.MAHV
+WHERE k.MAMH = 'CSDL' AND LANTHI = (
+	SELECT MAX(LANTHI)
+	FROM KETQUATHI k2
+	WHERE k2.MAHV = h.MAHV
+	GROUP BY k2.MAHV
+)
+
+
+-- 18.	Danh sách học viên và điểm thi môn “Co So Du Lieu” (chỉ lấy điểm cao nhất của các lần thi).
+SELECT h.MAHV, h.HO || ' ' || h.TEN AS HOTEN, MAX(DIEM)
+FROM HOCVIEN h
+	INNER JOIN KETQUATHI k ON k.MAHV = h.MAHV
+WHERE k.MAMH = 'CSDL'
+GROUP BY h.MAHV
+
+
+-- 19.	Khoa nào (mã khoa, tên khoa) được thành lập sớm nhất.
+SELECT MAKHOA, TENKHOA
+FROM KHOA
+WHERE NGTLAP = (
+	SELECT MIN(NGTLAP)
+	FROM KHOA
+)
+
+
+-- 20.	Có bao nhiêu giáo viên có học hàm là “GS” hoặc “PGS”.
+SELECT COUNT(*) AS SOGV
+FROM GIAOVIEN
+WHERE HOCHAM = 'GS' OR HOCHAM = 'PGS'
+
+
+-- 21.	Thống kê có bao nhiêu giáo viên có học vị là “CN”, “KS”, “Ths”, “TS”, “PTS” trong mỗi khoa.
+
+-- 22.	Mỗi môn học thống kê số lượng học viên theo kết quả (đạt và không đạt).
+
+
+-- 23.	Tìm giáo viên (mã giáo viên, họ tên) là giáo viên chủ nhiệm của một lớp, đồng thời dạy cho lớp đó ít nhất một môn học.
+
+-- 24.	Tìm họ tên lớp trưởng của lớp có sỉ số cao nhất.
+
+-- 25.	* Tìm họ tên những LOPTRG thi không đạt quá 3 môn (mỗi môn đều thi không đạt ở tất cả các lần thi).
+
+-- 26.	Tìm học viên (mã học viên, họ tên) có số môn đạt điểm 9,10 nhiều nhất.
+
+-- 27.	Trong từng lớp, tìm học viên (mã học viên, họ tên) có số môn đạt điểm 9,10 nhiều nhất.
+
+-- 28.	Trong từng học kỳ của từng năm, mỗi giáo viên phân công dạy bao nhiêu môn học, bao nhiêu lớp.
+
+-- 29.	Trong từng học kỳ của từng năm, tìm giáo viên (mã giáo viên, họ tên) giảng dạy nhiều nhất.
+
+-- 30.	Tìm môn học (mã môn học, tên môn học) có nhiều học viên thi không đạt (ở lần thi thứ 1) nhất.
+
+-- 31.	Tìm học viên (mã học viên, họ tên) thi môn nào cũng đạt (chỉ xét lần thi thứ 1).
+
+-- 32.	* Tìm học viên (mã học viên, họ tên) thi môn nào cũng đạt (chỉ xét lần thi sau cùng).
+
+-- 33.	* Tìm học viên (mã học viên, họ tên) đã thi tất cả các môn đều đạt (chỉ xét lần thi thứ 1).
+
+-- 34.	* Tìm học viên (mã học viên, họ tên) đã thi tất cả các môn đều đạt  (chỉ xét lần thi sau cùng).
+
+-- 35.	** Tìm học viên (mã học viên, họ tên) có điểm thi cao nhất trong từng môn (lấy điểm ở lần thi sau cùng).
 
 
 
