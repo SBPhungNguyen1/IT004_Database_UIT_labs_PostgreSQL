@@ -581,13 +581,41 @@ WHERE k.LANTHI = 1 AND k.KQUA = 'Khong Dat' AND k.MAMH = 'CSDL' AND k.LANTHI = (
 
 
 -- 13.	Tìm giáo viên (mã giáo viên, họ tên) không được phân công giảng dạy bất kỳ môn học nào.
-
+SELECT MAGV, HOTEN
+FROM GIAOVIEN
+EXCEPT
+SELECT g.MAGV, g.HOTEN
+FROM GIAOVIEN g
+	INNER JOIN GIANGDAY gd ON gd.MAGV = g.MAGV
 
 
 -- 14.	Tìm giáo viên (mã giáo viên, họ tên) không được phân công giảng dạy bất kỳ môn học nào thuộc khoa giáo viên đó phụ trách.
+SELECT *
+FROM GIAOVIEN g
+WHERE MAKHOA NOT IN (
+	SELECT mh.MAKHOA
+	FROM GIAOVIEN g1
+		INNER JOIN GIANGDAY gd ON gd.MAGV = g1.MAGV
+		INNER JOIN MONHOC mh ON mh.MAMH = gd.MAMH
+	WHERE g1.MAGV = g.MAGV
+)
 
 
 -- 15.	Tìm họ tên các học viên thuộc lớp “K11” thi một môn bất kỳ quá 3 lần vẫn “Khong dat” hoặc thi lần thứ 2 môn CTRR được 5 điểm.
+SELECT h.HO || ' ' || h.TEN AS HOTEN
+FROM HOCVIEN h
+	INNER JOIN KETQUATHI k ON k.MAHV = h.MAHV
+WHERE h.MALOP = 'K11' AND LANTHI = 3 AND KQUA = 'Khong Dat'
+UNION
+SELECT h.HO || ' ' || h.TEN AS HOTEN
+FROM HOCVIEN h
+	INNER JOIN KETQUATHI k ON k.MAHV = h.MAHV
+WHERE h.MALOP = 'K11' AND LANTHI = 2 AND MAMH = 'CTRR' AND DIEM = 5
+
+
+-- 
+
+
 
 
 
