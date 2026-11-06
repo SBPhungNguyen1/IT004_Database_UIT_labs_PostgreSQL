@@ -677,12 +677,94 @@ FROM GIAOVIEN g
 WHERE gd.MALOP = l.MALOP
 
 -- 24.	Tìm họ tên lớp trưởng của lớp có sỉ số cao nhất.
+SELECT h.MAHV, h.HO || ' ' || h.TEN AS HOTEN
+FROM HOCVIEN h
+	INNER JOIN LOP l ON l.TRGLOP = h.MAHV
+WHERE l.SISO IN (
+	SELECT MAX(SISO)
+	FROM LOP
+)
+
 
 -- 25.	* Tìm họ tên những LOPTRG thi không đạt quá 3 môn (mỗi môn đều thi không đạt ở tất cả các lần thi).
+SELECT hv.HO, hv.TEN
+FROM HOCVIEN hv
+INNER JOIN LOP l ON l.TRGLOP = hv.MAHV
+LEFT JOIN (
+    SELECT MAHV, MAMH
+    FROM KETQUATHI
+    GROUP BY MAHV, MAMH
+    HAVING COUNT(*) = COUNT(
+        CASE 
+			WHEN KQUA = 'Khong Dat' THEN 1 
+		END
+    )
+) T ON T.MAHV = hv.MAHV
+GROUP BY hv.MAHV, hv.HO, hv.TEN
+HAVING COUNT(T.MAMH) <= 3;
 
 -- 26.	Tìm học viên (mã học viên, họ tên) có số môn đạt điểm 9,10 nhiều nhất.
+SELECT h.MAHV, h.HO || ' ' || h.TEN AS HOTEN
+FROM HOCVIEN h
+	INNER JOIN KETQUATHI k ON k.MAHV = h.MAHV
+WHERE DIEM >= 9 AND DIEM <= 10
+GROUP BY h.MAHV
+HAVING COUNT(*) = (
+	SELECT COUNT(*) AS TONGDIEM
+	FROM KETQUATHI
+	WHERE DIEM >= 9 AND DIEM <= 10
+	GROUP BY MAHV
+	ORDER BY TONGDIEM DESC
+	LIMIT 1
+)
+
 
 -- 27.	Trong từng lớp, tìm học viên (mã học viên, họ tên) có số môn đạt điểm 9,10 nhiều nhất.
+SELECT T.MALOP, MAX(MAXDIEM)
+FROM (
+	SELECT h.MALOP, COUNT(*) AS MAXDIEM
+	FROM KETQUATHI k
+		INNER JOIN HOCVIEN h ON h.MAHV = k.MAHV
+	WHERE DIEM >= 9 AND DIEM <= 10
+	GROUP BY k.MAHV, h.MALOP
+	ORDER BY MAXDIEM DESC
+) AS T
+GROUP BY T.MALOP
+
+
+SELECT k1.MAHV, h1.MALOP, COUNT(*)
+FROM HOCVIEN h1
+	INNER JOIN KETQUATHI k1 ON k1.MAHV = h1.MAHV
+	INNER JOIN LOP l1 ON l1.MALOP = h1.MALOP
+WHERE DIEM >= 9 AND DIEM <= 10
+GROUP BY k1.MAHV, h1.MALOP
+
+
+
+SELECT h.MAHV, h.HO || ' ' || h.TEN AS HOTEN, STU.MALOP, TONGDIEM
+FROM (
+	SELECT k1.MAHV, h1.MALOP, COUNT(*) TONGDIEM
+	FROM HOCVIEN h1
+		INNER JOIN KETQUATHI k1 ON k1.MAHV = h1.MAHV
+		INNER JOIN LOP l1 ON l1.MALOP = h1.MALOP
+	WHERE DIEM >= 9 AND DIEM <= 10
+	GROUP BY k1.MAHV, h1.MALOP
+) AS STU, (
+	SELECT T.MALOP, MAX(MAXDIEM)
+	FROM (
+		SELECT h.MALOP, COUNT(*) AS MAXDIEM
+		FROM KETQUATHI k
+			INNER JOIN HOCVIEN h ON h.MAHV = k.MAHV
+		WHERE DIEM >= 9 AND DIEM <= 10
+		GROUP BY k.MAHV, h.MALOP
+		ORDER BY MAXDIEM DESC
+	) AS T
+	GROUP BY T.MALOP
+) AS SCORE, HOCVIEN h
+WHERE SCORE.MALOP = STU.MALOP
+	AND SCORE.MAX = STU.TONGDIEM
+	AND h.MAHV = STU.MAHV
+
 
 -- 28.	Trong từng học kỳ của từng năm, mỗi giáo viên phân công dạy bao nhiêu môn học, bao nhiêu lớp.
 
