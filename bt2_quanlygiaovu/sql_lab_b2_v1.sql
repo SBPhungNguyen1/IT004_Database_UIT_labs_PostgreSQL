@@ -663,11 +663,18 @@ FROM GIAOVIEN
 GROUP BY MAKHOA, HOCVI
 
 
-
 -- 22.	Mỗi môn học thống kê số lượng học viên theo kết quả (đạt và không đạt).
+SELECT MAMH, KQUA, COUNT(*)
+FROM KETQUATHI
+GROUP BY MAMH, KQUA
 
 
 -- 23.	Tìm giáo viên (mã giáo viên, họ tên) là giáo viên chủ nhiệm của một lớp, đồng thời dạy cho lớp đó ít nhất một môn học.
+SELECT DISTINCT(g.MAGV), g.HOTEN
+FROM GIAOVIEN g
+	INNER JOIN GIANGDAY gd ON gd.MAGV = g.MAGV
+	INNER JOIN LOP l ON l.MAGVCN = g.MAGV
+WHERE gd.MALOP = l.MALOP
 
 -- 24.	Tìm họ tên lớp trưởng của lớp có sỉ số cao nhất.
 
