@@ -658,6 +658,11 @@ WHERE HOCHAM = 'GS' OR HOCHAM = 'PGS'
 
 
 -- 21.	Thống kê có bao nhiêu giáo viên có học vị là “CN”, “KS”, “Ths”, “TS”, “PTS” trong mỗi khoa.
+SELECT MAKHOA, HOCVI, COUNT(*) AS SL
+FROM GIAOVIEN
+GROUP BY MAKHOA, HOCVI
+
+
 
 -- 22.	Mỗi môn học thống kê số lượng học viên theo kết quả (đạt và không đạt).
 
