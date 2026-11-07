@@ -809,8 +809,26 @@ FROM T
 
 
 -- 30.	Tìm môn học (mã môn học, tên môn học) có nhiều học viên thi không đạt (ở lần thi thứ 1) nhất.
+SELECT k.MAMH, m.TENMH, COUNT(*) SL
+FROM KETQUATHI k
+	INNER JOIN MONHOC m ON m.MAMH = k.MAMH
+WHERE LANTHI = 1 AND KQUA = 'Khong Dat'
+GROUP BY k.MAMH, m.TENMH
+ORDER BY SL DESC
+LIMIT 1
+
 
 -- 31.	Tìm học viên (mã học viên, họ tên) thi môn nào cũng đạt (chỉ xét lần thi thứ 1).
+SELECT hv.MAHV, hv.HO || ' ' || hv.TEN AS HOTEN
+FROM HOCVIEN hv
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM KETQUATHI kq
+    WHERE kq.MAHV = hv.MAHV
+        AND kq.LANTHI = 1
+        AND kq.KQUA = 'Khong Dat'
+)
+
 
 -- 32.	* Tìm học viên (mã học viên, họ tên) thi môn nào cũng đạt (chỉ xét lần thi sau cùng).
 
