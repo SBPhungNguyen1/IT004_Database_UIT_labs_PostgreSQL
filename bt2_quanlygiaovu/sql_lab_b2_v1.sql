@@ -831,19 +831,104 @@ WHERE NOT EXISTS (
 
 
 -- 32.	* Tìm học viên (mã học viên, họ tên) thi môn nào cũng đạt (chỉ xét lần thi sau cùng).
+WITH LAN_CUOI AS (
+    SELECT MAHV, MAMH, MAX(LANTHI) AS MAX_LAN
+    FROM KETQUATHI
+    GROUP BY MAHV, MAMH
+),
+KQ_CUOI AS (
+    SELECT kq.*
+    FROM KETQUATHI kq
+    JOIN LAN_CUOI lc
+        ON kq.MAHV = lc.MAHV
+        AND kq.MAMH = lc.MAMH
+        AND kq.LANTHI = lc.MAX_LAN
+)
+SELECT hv.MAHV, CONCAT(hv.HO, ' ', hv.TEN) AS HOTEN
+FROM HOCVIEN hv
+WHERE EXISTS (
+    SELECT 1
+    FROM KQ_CUOI kq
+    WHERE kq.MAHV = hv.MAHV
+)
+AND NOT EXISTS (
+    SELECT 1
+    FROM KQ_CUOI kq
+    WHERE kq.MAHV = hv.MAHV
+        AND kq.KQUA = 'Khong Dat'
+)
+
 
 -- 33.	* Tìm học viên (mã học viên, họ tên) đã thi tất cả các môn đều đạt (chỉ xét lần thi thứ 1).
+SELECT hv.MAHV, CONCAT(hv.HO, ' ', hv.TEN) AS HOTEN
+FROM HOCVIEN hv
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM MONHOC mh
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM KETQUATHI kq
+        WHERE kq.MAHV = hv.MAHV
+            AND kq.MAMH = mh.MAMH
+            AND kq.LANTHI = 1
+            AND kq.KQUA = 'Dat'
+    )
+)
+
 
 -- 34.	* Tìm học viên (mã học viên, họ tên) đã thi tất cả các môn đều đạt  (chỉ xét lần thi sau cùng).
+WITH LAN_CUOI AS (
+    SELECT MAHV, MAMH, MAX(LANTHI) AS MAX_LAN
+    FROM KETQUATHI
+    GROUP BY MAHV, MAMH
+)
+SELECT hv.MAHV, CONCAT(hv.HO, ' ', hv.TEN) AS HOTEN
+FROM HOCVIEN hv
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM MONHOC mh
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM KETQUATHI kq
+        JOIN LAN_CUOI lc
+            ON kq.MAHV = lc.MAHV
+            AND kq.MAMH = lc.MAMH
+            AND kq.LANTHI = lc.MAX_LAN
+        WHERE kq.MAHV = hv.MAHV
+            AND kq.MAMH = mh.MAMH
+            AND kq.KQUA = 'Dat'
+    )
+)
+
 
 -- 35.	** Tìm học viên (mã học viên, họ tên) có điểm thi cao nhất trong từng môn (lấy điểm ở lần thi sau cùng).
-
-
-
-
-
-
-
+WITH LAN_CUOI AS (
+    SELECT MAHV, MAMH, MAX(LANTHI) AS MAX_LAN
+    FROM KETQUATHI
+    GROUP BY MAHV, MAMH
+),
+KQ_CUOI AS (
+    SELECT kq.*
+    FROM KETQUATHI kq
+    JOIN LAN_CUOI lc
+        ON kq.MAHV = lc.MAHV
+        AND kq.MAMH = lc.MAMH
+        AND kq.LANTHI = lc.MAX_LAN
+),
+MAX_DIEM AS (
+    SELECT MAMH, MAX(DIEM) AS MAX_DIEM
+    FROM KQ_CUOI
+    GROUP BY MAMH
+)
+SELECT kq.MAMH, hv.MAHV,
+       CONCAT(hv.HO, ' ', hv.TEN) AS HOTEN,
+       kq.DIEM
+FROM KQ_CUOI kq
+JOIN MAX_DIEM md
+    ON kq.MAMH = md.MAMH
+    AND kq.DIEM = md.MAX_DIEM
+JOIN HOCVIEN hv
+    ON hv.MAHV = kq.MAHV
 
 
 
