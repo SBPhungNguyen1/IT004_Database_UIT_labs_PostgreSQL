@@ -767,8 +767,15 @@ WHERE SCORE.MALOP = STU.MALOP
 
 
 -- 28.	Trong từng học kỳ của từng năm, mỗi giáo viên phân công dạy bao nhiêu môn học, bao nhiêu lớp.
+SELECT g.MAGV, g.HOTEN, gd.HOCKY, gd.NAM, COUNT(gd.MAMH) AS SLMON, COUNT(gd.MALOP) AS SLLOP
+FROM GIAOVIEN g
+	INNER JOIN GIANGDAY gd ON gd.MAGV = g.MAGV
+GROUP BY g.MAGV, g.HOTEN, gd.HOCKY, gd.NAM
+
 
 -- 29.	Trong từng học kỳ của từng năm, tìm giáo viên (mã giáo viên, họ tên) giảng dạy nhiều nhất.
+
+
 
 -- 30.	Tìm môn học (mã môn học, tên môn học) có nhiều học viên thi không đạt (ở lần thi thứ 1) nhất.
 
