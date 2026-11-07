@@ -774,7 +774,38 @@ GROUP BY g.MAGV, g.HOTEN, gd.HOCKY, gd.NAM
 
 
 -- 29.	Trong từng học kỳ của từng năm, tìm giáo viên (mã giáo viên, họ tên) giảng dạy nhiều nhất.
+SELECT HOCKY, NAM, COUNT(*) AS SL
+FROM GIANGDAY gd
+GROUP BY HOCKY, NAM, MAGV
 
+SELECT HOCKY, NAM, MAGV, COUNT(*) AS SL
+FROM GIANGDAY
+GROUP BY HOCKY, NAM, MAGV
+HAVING COUNT(*) >= ALL (
+    SELECT COUNT(*)
+    FROM GIANGDAY
+    GROUP BY HOCKY, NAM, MAGV
+);
+
+
+WITH T AS (
+    SELECT HOCKY, NAM, MAGV, COUNT(*) AS SL
+    FROM GIANGDAY
+    GROUP BY HOCKY, NAM, MAGV
+),
+T2 AS (
+    SELECT HOCKY, NAM, MAX(SL) AS MAX_SL
+    FROM T
+    GROUP BY HOCKY, NAM
+)
+SELECT DISTINCT gv.MAGV, gv.HOTEN
+FROM T
+    INNER JOIN T2 
+        ON T.HOCKY = T2.HOCKY
+        AND T.NAM = T2.NAM
+        AND T.SL = T2.MAX_SL
+    INNER JOIN GIAOVIEN gv 
+        ON gv.MAGV = T.MAGV;
 
 
 -- 30.	Tìm môn học (mã môn học, tên môn học) có nhiều học viên thi không đạt (ở lần thi thứ 1) nhất.
